@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>Title</title>
+    <style>
+      .row {
+        display: flex;
+      }
+
+      #temperatureRange {
+        width: 50%;
+      }
+
+      #temperatureValue {
+        margin: 0 10px;
+      }
+
+    </style>
+</head>
+<body>
+    <div class="row">
+        <input
+            type="range"
+            id="temperatureRange"
+            name="temperature"
+            min="0"
+            max="100"
+            value="20"
+        />
+        <div id="temperatureValue">
+            20
+        </div>
+        <button id="sendButton">
+            Send temperature
+        </button>
+
+    </div>
+    <button id="fetchButton">
+        Fetch Data
+    </button>
+    <div >
+        <h3>Temperatur:  <span id="fetchedValue">20</span> </h3>
+
+    </div>
+    <script>
+
+        //fetch button
+        const  fetchButton = document.getElementById('fetchButton');
+        const field1Value = document.getElementById('fetchedValue');
+        console.log(fetchButton);
+
+        fetchButton.addEventListener(
+            'click',
+            function () {
+                fetch(
+                    'https://api.thingspeak.com/channels/2658149/fields/1/last.json?api_key=DU4IMZVM6J6T5PDX' ,
+                ).then(function (response) {
+                    return response.json()
+                }).then(
+                    function (data) {
+                        console.log(data.field1);
+                        if (data.field1>60){
+                            field1Value.innerText=data.field1 + " Alarm "
+
+                        }else {
+                            field1Value.innerText=data.field1;
+                        }
+
+                    },
+                );
+                console.log("click")
+            },
+        );
+
+      // Send data
+      const sendButton = document.getElementById('sendButton');
+      const temperatureElement = document.getElementById('temperatureRange');
+      const temperatureValueElement = document.getElementById('temperatureValue');
+
+      temperatureElement.addEventListener(
+        'input',
+        function () {
+          temperatureValueElement.innerText = temperatureElement.value;
+        },
+      );
+
+      sendButton.addEventListener(
+        'click',
+        function () {
+          fetch(
+            'https://api.thingspeak.com/update?api_key=DU4IMZVM6J6T5PDX&field1=' + temperatureElement.value + '&field2=' + temperatureElement.value,
+          ).then(function (response) {
+              return response.json()
+          }).then(
+            function (response) {
+              console.log(response);
+            },
+          );
+        },
+      );
+
+      // CSV https://api.thingspeak.com/channels/9/feeds.csv?results=2
+      // field https://api.thingspeak.com/channels/2658149/fields/1.json?api_key=XHTJQAJM8B6TBL8S&results=2
+      // fetch data
+
+
+
+    </script>
+</body>
+</html>
