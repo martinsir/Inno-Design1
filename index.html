@@ -3,20 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <style>
-        .row {
-            display: flex;
-        }
-    </style>
 </head>
 <body>
 <div class="row">
     <h1>Latest temperature readings</h1>
 </div>
+
 <div>
     <div id="temperatureReadings"></div>
-</div>
 
+</div>
 <script>
     const temperatureReadingsElement = document.getElementById('temperatureReadings');
 
@@ -27,8 +23,8 @@
      */
     function fetchTemperature() {
         fetch(
-            'https://api.thingspeak.com/channels/2658047/feeds/last.json'
-            + '?api_key=SKFTQGM001H92ADS',
+            'https://api.thingspeak.com/channels/2658149/feeds/last.json'
+            + '?api_key=XHTJQAJM8B6TBL8S',
         )
             .then(function (response) {
                 // Convert to JSON
@@ -36,10 +32,18 @@
             })
             .then(function (data) {
                 console.log('Latest: ', data);
+                if (data.field2>60){
+                    console.log("over 60")
+                    //start alarm på microbit?
+                    alert(location.hostname + "Has detected dangerous heat levels on your batteri!\n The Batteri box needs attention!");
+
+                }else{
+
                 // Create new div, set the content of the div, and append it to the readings element
                 const element = document.createElement('div');
-                element.textContent = data.field1 + '°C [' + data.created_at + ']';
+                element.textContent = 'Temp: ' +data.field1 + '°C ___ SoC: '+ data.field2 +' ___ [' + data.created_at + ']';
                 temperatureReadingsElement.append(element);
+                }
             });
     }
 
@@ -50,7 +54,7 @@
 
     ////////////////////////////
     // Send data
-    let temperature = 20;
+    let temperature = 60;
 
     /**
      * Returns a range-limited number {n} between {min} and {max}
@@ -87,8 +91,8 @@
         // Make request to update ThingSpeak channel with new temperature
         fetch(
             'https://api.thingspeak.com/update'
-            + '?api_key=EO8IMOJWANV5K7W1'
-            + '&field1=' + temperature,
+            + '?api_key=DU4IMZVM6J6T5PDX'
+            + '&field1=' + temperature+ '&field2=' + temperature,
         )
             .then(function (response) {
                 // Convert to JSON
@@ -99,6 +103,7 @@
                 console.log(`Entry ${data} added with value: ${temperature}`);
             });
     }, 1000 * 16);
+
 </script>
 </body>
 </html>

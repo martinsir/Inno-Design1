@@ -1,0 +1,4 @@
+/*Row for data*/
+*.row {
+    display: flex;
+}
